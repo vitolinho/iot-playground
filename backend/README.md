@@ -2,7 +2,7 @@
 python -m venv .venv
 .venv/Script/activate
 pip install -r ./requirements.txt
-python main.py
+python -m streamlit run main.py
 ```
 
 Il Faut allumer le bluetouth sur son ordinateur
