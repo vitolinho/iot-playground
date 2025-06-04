@@ -9,7 +9,7 @@ while True:
     keyboard.press(Key.up)
     keyboard.release(Key.up)
 
-    # flèche du base
+    # flèche du bas
     keyboard.press(Key.down)
     keyboard.release(Key.down)
 
