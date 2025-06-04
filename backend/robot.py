@@ -4,14 +4,12 @@ from pynput.keyboard import Key, Controller
 keyboard = Controller()
 
 while True:
-    time.sleedup(5)
     
     # flèche du haut
     keyboard.press(Key.up)
     keyboard.release(Key.up)
-    time.sleep(2)
 
-    # flèche du haut
+    # flèche du base
     keyboard.press(Key.down)
     keyboard.release(Key.down)
 
