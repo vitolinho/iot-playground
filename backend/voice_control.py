@@ -2,9 +2,33 @@ import sounddevice as sd
 import numpy as np
 from faster_whisper import WhisperModel
 from pynput.keyboard import Key, Controller
-from pynput.mouse import Button, Controller as MouseController  # Add this import
+from pynput.mouse import Button, Controller as MouseController
 import scipy.io.wavfile
 import time
+import threading
+
+# Variables globales pour le contrôle
+voice_thread = None
+is_running = False
+
+def start_voice_control():
+    """Démarre le contrôle vocal dans un thread séparé"""
+    global voice_thread, is_running
+    if not is_running:
+        is_running = True
+        voice_thread = threading.Thread(target=transcribe_audio, daemon=True)
+        voice_thread.start()
+        print("🎤 Contrôle vocal démarré")
+
+def stop_voice_control():
+    """Arrête le contrôle vocal"""
+    global is_running, voice_thread
+    if is_running:
+        is_running = False
+        if voice_thread:
+            voice_thread.join(timeout=2)
+            voice_thread = None
+        print("🛑 Contrôle vocal arrêté")
 
 def simulate_key(keyboard, key):
     keyboard.press(key)
@@ -77,13 +101,13 @@ def transcribe_audio():
     model = WhisperModel("tiny", device="cpu", compute_type="int8", num_workers=2)
     keyboard = Controller()
     mouse = MouseController()
-    keyboard_enabled = True  # Changed to True - Enabled by default
+    keyboard_enabled = True
     print("✅ Initialization complete")
     print("🎮 Keyboard controls ENABLED by default")
     
     # Optimized audio parameters
     samplerate = 16000
-    chunk_duration = 0.5  # Reduced to 200ms for faster response
+    chunk_duration = 0.5
     chunk_size = int(samplerate * chunk_duration)
     device = 1
     
@@ -179,11 +203,13 @@ def transcribe_audio():
             callback=audio_callback
         ):
             print("✅ Ready!")
-            while True:
-                time.sleep(0.05)  # Reduced sleep time
+            while is_running:  # Utiliser la variable globale pour le contrôle
+                time.sleep(0.05)
                 
     except KeyboardInterrupt:
         print("\n🛑 Stopping...")
+    finally:
+        print("🎤 Voice control stopped")
 
 if __name__ == "__main__":
     transcribe_audio()
